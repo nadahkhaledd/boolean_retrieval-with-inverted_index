@@ -136,6 +136,7 @@ class InvertedIndex {
     public String find_documents(String phrase) { // any mumber of terms optimized search
         String result = "";
         ArrayList<String> query = new ArrayList<>(Arrays.asList(phrase.split("\\W+")));
+        ArrayList<String> words = new ArrayList<>();
         ArrayList<String> booleans = new ArrayList<>();
 
         for(int i=0; i<query.size(); i++)
@@ -145,23 +146,46 @@ class InvertedIndex {
                     query.get(i).equals("NOT"))
             {
                 booleans.add(query.get(i));
-                query.remove(query.get(i));
             }
+            else
+                words.add(query.get(i));
         }
 
-        query = rearrange(query, new int[query.size()], query.size());
+        //words = rearrange(words, new int[words.size()], words.size());
 
-        HashSet<Integer> answer = new HashSet<Integer>(index.get(query.get(0).toLowerCase()).postingList);
+        HashSet<Integer> answer = new HashSet<Integer>(index.get(words.get(0).toLowerCase()).postingList);
 
-        for (int i=1; i<query.size(); i++)
+
+        //booleans.forEach(System.out::println);
+
+        for (int i=1; i<words.size(); i++)
         {
             while (booleans.size()!=0)
             {
                 String nextOperation = booleans.get(0);
-                if (nextOperation.equals("AND")) {
-                    answer = intersect(answer, index.get(query.get(i).toLowerCase()).postingList);
-                } else if (nextOperation.equals("OR")) {
-                    answer = query_union(answer, index.get(query.get(i).toLowerCase()).postingList);
+                switch (nextOperation) {
+                    case "AND":
+                    {
+                        HashSet<Integer> temp = index.get(words.get(i).toLowerCase()).postingList;
+
+                        if(booleans.size()>1 && booleans.get(1).equals("NOT"))
+                        {
+                             temp = not(temp);
+                        }
+                        answer = intersect(answer, temp);
+                        break;
+                    }
+
+                    case "OR":
+                    {
+                        HashSet<Integer> temp = index.get(words.get(i).toLowerCase()).postingList;
+                        if(booleans.size()>1 && booleans.get(1).equals("NOT"))
+                        {
+                            temp = not(index.get(words.get(i).toLowerCase()).postingList);
+                        }
+                        answer = query_union(answer, temp);
+                        break;
+                    }
                 }
                 booleans.remove(0);
             }
@@ -172,8 +196,6 @@ class InvertedIndex {
         }
         return result;
     }
-
-
 
 }
 
@@ -201,9 +223,14 @@ public class index {
         });
 
         String phrase1 = "agile AND and AND can AND ehab AND should AND only";
-        String phrase2 = "agile OR introduction";
+        String phrase2 = "agile";
+        String phrase3 = "introduction AND NOT agile";
 
-        String result = index.find_documents(phrase2);
+//        var r = index.not(new HashSet<>(Arrays.asList(0, 1)));
+//        r = index.intersect(new HashSet<>(Arrays.asList(1, 7, 8, 9, 10, 11, 12, 13, 14)), r);
+//        r.forEach(element -> System.out.println(index.sources.get(element)));
+
+        String result = index.find_documents(phrase3);
         System.out.println(result);
     }
 
