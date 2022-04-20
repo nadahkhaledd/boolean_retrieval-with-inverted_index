@@ -8,25 +8,8 @@ public class run {
     public static void main(String[] args) throws IOException
     {
         HashSet<Integer> union = new HashSet<Integer>();
-        ArrayList<Integer> all = new ArrayList<Integer>();
-        all.add(0);
-        all.add(1);
-        all.add(2);
-        all.add(3);
-        all.add(4);
-        all.add(5);
-        all.add(6);
-        all.add(7);
-        all.add(8);
-        all.add(9);
-        HashSet<Integer> not = new HashSet<Integer>();
-        not.add(2);
-        not.add(5);
-        not.add(6);
-        not.add(8);
-        not.add(10);
-        not.add(13);
-
+        ArrayList<Integer> all = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+        HashSet<Integer> not = new HashSet<Integer>(Arrays.asList(2, 5, 6, 8, 10, 15));
 
         union.addAll(all);
         union.addAll(not);

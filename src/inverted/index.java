@@ -139,9 +139,9 @@ class InvertedIndex {
         return answer;
     }
 
-    public HashSet<Integer> union(HashSet<Integer> pL1, HashSet<Integer> pL2)
+    public HashSet<Integer> query_union(HashSet<Integer> pL1, HashSet<Integer> pL2)
     {
-        HashSet<Integer> answer = new HashSet<Integer>();
+        HashSet<Integer> answer = new HashSet<>();
         answer.addAll(pL1);
         answer.addAll(pL2);
 
