@@ -87,26 +87,6 @@ class InvertedIndex {
         printDictionary();
     }
 
-    // query inverted index
-    // takes a string of terms as an argument
-    public String find(String phrase) {
-        String result = "";
-        String[] words = phrase.split("\\W+");
-        HashSet<Integer> res = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
-        for (String word : words) {
-            res.retainAll(index.get(word).postingList);
-        }
-        if (res.size() == 0) {
-            System.out.println("Not found");
-            return "";
-        }
-        // String result = "Found in: \n";
-        for (int num : res) {
-            result += "\t" + sources.get(num) + "\n";
-        }
-        return result;
-    }
-
 
     /*
      INTERSECT ( p1 , p2 )
@@ -161,7 +141,7 @@ class InvertedIndex {
 
     public HashSet<Integer> union(HashSet<Integer> pL1, HashSet<Integer> pL2)
     {
-        HashSet<Integer> answer = new HashSet<Integer>();;
+        HashSet<Integer> answer = new HashSet<Integer>();
         Iterator<Integer> itP1 = pL1.iterator();
         Iterator<Integer> itP2 = pL2.iterator();
 
@@ -184,6 +164,33 @@ class InvertedIndex {
         }
 
         return answer;
+    }
+
+    HashSet<Integer> not(HashSet<Integer> pL)
+    {
+        HashSet<Integer> answer = new HashSet<Integer>(sources.keySet());
+
+        answer.removeAll(pL);
+
+        return answer;
+    }
+
+    public String find(String phrase) {
+        String result = "";
+        String[] words = phrase.split("\\W+");
+        HashSet<Integer> res = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
+        for (String word : words) {
+            res.retainAll(index.get(word).postingList);
+        }
+        if (res.size() == 0) {
+            System.out.println("Not found");
+            return "";
+        }
+        // String result = "Found in: \n";
+        for (int num : res) {
+            result += "\t" + sources.get(num) + "\n";
+        }
+        return result;
     }
 
     public String find_for_2_terms(String phrase) { // 2 term phrase  2 postingsLists
@@ -293,41 +300,40 @@ class InvertedIndex {
         return result;
     }
 
-    public void compare(String phrase) { // optimized search
-        long iterations = 5000000;
-        String result = "";
-        long startTime = System.currentTimeMillis();
-        for (long i = 1; i < iterations; i++) {
-            result = find(phrase);
-        }
-        long estimatedTime = System.currentTimeMillis() - startTime;
-        System.out.println(" (*) elapsed = " + estimatedTime + " ms.");
-        //-----------------------------
-        System.out.println(" result = " + result);
-        startTime = System.currentTimeMillis();
-        for (long i = 1; i < iterations; i++) {
-            result = find_for_any_terms_nonOp(phrase);
-        }
-        estimatedTime = System.currentTimeMillis() - startTime;
-        System.out.println(" (*) Find_03 non-optimized intersect  elapsed = " + estimatedTime + " ms.");
-        System.out.println(" result = " + result);
+//    public void compare(String phrase) { // optimized search
+//        long iterations = 5000000;
+//        String result = "";
+//        long startTime = System.currentTimeMillis();
+//        for (long i = 1; i < iterations; i++) {
+//            result = find(phrase);
+//        }
+//        long estimatedTime = System.currentTimeMillis() - startTime;
+//        System.out.println(" (*) elapsed = " + estimatedTime + " ms.");
 //        //-----------------------------
-        startTime = System.currentTimeMillis();
-        for (long i = 1; i < iterations; i++) {
-            result = find_for_any_terms_op(phrase);
-        }
-        estimatedTime = System.currentTimeMillis() - startTime;
-        System.out.println(" (*) Find_04 optimized intersect elapsed = " + estimatedTime + " ms.");
-        System.out.println(" result = " + result);
-    }
+//        System.out.println(" result = " + result);
+//        startTime = System.currentTimeMillis();
+//        for (long i = 1; i < iterations; i++) {
+//            result = find_for_any_terms_nonOp(phrase);
+//        }
+//        estimatedTime = System.currentTimeMillis() - startTime;
+//        System.out.println(" (*) Find_03 non-optimized intersect  elapsed = " + estimatedTime + " ms.");
+//        System.out.println(" result = " + result);
+////        //-----------------------------
+//        startTime = System.currentTimeMillis();
+//        for (long i = 1; i < iterations; i++) {
+//            result = find_for_any_terms_op(phrase);
+//        }
+//        estimatedTime = System.currentTimeMillis() - startTime;
+//        System.out.println(" (*) Find_04 optimized intersect elapsed = " + estimatedTime + " ms.");
+//        System.out.println(" result = " + result);
+//    }
 }
 
 public class index {
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         InvertedIndex index = new InvertedIndex();
         String phrase = "";
-        /**/
         index.buildIndex(new String[]{
                 "docs/500.txt",
                 "docs/501.txt",
@@ -352,7 +358,7 @@ public class index {
         //   index.find_for_2_terms("agile cost");
         //    index.compare("and agile");
         //    System.out.println(" result = " +index.find_for_3_terms("different system agile"));
-        index.compare("agile and can ehab should only");
+        //index.compare("agile and can ehab should only");
 //        index.compare("different system should results are in cost and can only computing elements");
 //        do {
 //            System.out.println("Print search phrase: ");
