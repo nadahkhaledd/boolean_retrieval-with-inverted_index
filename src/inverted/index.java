@@ -9,6 +9,7 @@ package inverted;
  */
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 class DictEntry {
 
@@ -103,38 +104,10 @@ class InvertedIndex {
      */
 
     HashSet<Integer> intersect(HashSet<Integer> pL1, HashSet<Integer> pL2) {
-        HashSet<Integer> answer = new HashSet<Integer>();
-        Iterator<Integer> itP1 = pL1.iterator();
-        Iterator<Integer> itP2 = pL2.iterator();
 
-        int docId1 = 0, docId2 = 0;
-        if (itP1.hasNext())
-            docId1 = itP1.next();
-        if (itP2.hasNext())
-            docId2 = itP2.next();
-
-        while (itP1.hasNext() && itP2.hasNext()) {
-
-            if (docId1 == docId2) {
-                answer.add(docId1);
-                docId1 = itP1.next();
-                docId2 = itP2.next();
-            }
-            else if (docId1 < docId2) {
-                if (itP1.hasNext())
-                    docId1 = itP1.next();
-                else return answer;
-
-            } else {
-                if (itP2.hasNext())
-                    docId2 = itP2.next();
-                else return answer;
-            }
-
-        }
-        if (docId1 == docId2) {
-            answer.add(docId1);
-        }
+        HashSet<Integer> answer = pL1.stream()
+                .distinct()
+                .filter(pL2::contains).collect(Collectors.toCollection(HashSet::new));
 
         return answer;
     }
