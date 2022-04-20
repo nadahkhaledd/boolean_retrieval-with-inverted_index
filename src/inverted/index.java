@@ -22,7 +22,6 @@ class DictEntry {
     }
 }
 
-//=====================================================================
 class InvertedIndex {
 
     Map<Integer, String> sources;  // store the doc_id and the file name
@@ -255,33 +254,33 @@ class InvertedIndex {
         return result;
     }
 
-//    public void compare(String phrase) { // optimized search
-//        long iterations = 5000000;
-//        String result = "";
-//        long startTime = System.currentTimeMillis();
-//        for (long i = 1; i < iterations; i++) {
-//            result = find(phrase);
-//        }
-//        long estimatedTime = System.currentTimeMillis() - startTime;
-//        System.out.println(" (*) elapsed = " + estimatedTime + " ms.");
+    public void compare(String phrase) { // optimized search
+        long iterations = 5000000;
+        String result = "";
+        long startTime = System.currentTimeMillis();
+        for (long i = 1; i < iterations; i++) {
+            result = find(phrase);
+        }
+        long estimatedTime = System.currentTimeMillis() - startTime;
+        System.out.println(" (*) elapsed = " + estimatedTime + " ms.");
+        //-----------------------------
+        System.out.println(" result = " + result);
+        startTime = System.currentTimeMillis();
+        for (long i = 1; i < iterations; i++) {
+            result = find_for_any_terms_nonOp(phrase);
+        }
+        estimatedTime = System.currentTimeMillis() - startTime;
+        System.out.println(" (*) Find_03 non-optimized intersect  elapsed = " + estimatedTime + " ms.");
+        System.out.println(" result = " + result);
 //        //-----------------------------
-//        System.out.println(" result = " + result);
-//        startTime = System.currentTimeMillis();
-//        for (long i = 1; i < iterations; i++) {
-//            result = find_for_any_terms_nonOp(phrase);
-//        }
-//        estimatedTime = System.currentTimeMillis() - startTime;
-//        System.out.println(" (*) Find_03 non-optimized intersect  elapsed = " + estimatedTime + " ms.");
-//        System.out.println(" result = " + result);
-////        //-----------------------------
-//        startTime = System.currentTimeMillis();
-//        for (long i = 1; i < iterations; i++) {
-//            result = find_for_any_terms_op(phrase);
-//        }
-//        estimatedTime = System.currentTimeMillis() - startTime;
-//        System.out.println(" (*) Find_04 optimized intersect elapsed = " + estimatedTime + " ms.");
-//        System.out.println(" result = " + result);
-//    }
+        startTime = System.currentTimeMillis();
+        for (long i = 1; i < iterations; i++) {
+            result = find_for_any_terms_op(phrase);
+        }
+        estimatedTime = System.currentTimeMillis() - startTime;
+        System.out.println(" (*) Find_04 optimized intersect elapsed = " + estimatedTime + " ms.");
+        System.out.println(" result = " + result);
+    }
 }
 
 public class index {
@@ -313,7 +312,7 @@ public class index {
         //   index.find_for_2_terms("agile cost");
         //    index.compare("and agile");
         //    System.out.println(" result = " +index.find_for_3_terms("different system agile"));
-        //index.compare("agile and can ehab should only");
+        index.compare("agile and can ehab should only");
 //        index.compare("different system should results are in cost and can only computing elements");
 //        do {
 //            System.out.println("Print search phrase: ");
