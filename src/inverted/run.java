@@ -22,11 +22,6 @@ public class run {
 
         union.addAll(result);
 
-        for(int i : union)
-        {
-            System.out.println(i);
-        }
-
-
+        union.forEach(System.out::println);
     }
 }

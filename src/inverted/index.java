@@ -32,12 +32,8 @@ class InvertedIndex {
         index = new HashMap<String, DictEntry>();
     }
 
-    public void printPostingList(HashSet<Integer> hset) {
-        Iterator<Integer> it2 = hset.iterator();
-        while (it2.hasNext()) {
-            System.out.print(it2.next() + ", ");
-        }
-        System.out.println("");
+    public void printPostingList(HashSet<Integer> pl) {
+        pl.forEach(element -> System.out.print(element + ", "));
     }
 
     public void printDictionary() {
@@ -87,20 +83,6 @@ class InvertedIndex {
         printDictionary();
     }
 
-
-    /*
-     INTERSECT ( p1 , p2 )
-//          1 answer ←   {}
-//          2 while p1  != NIL and p2  != NIL
-//          3 do if docID ( p 1 ) = docID ( p2 )
-//          4   then A DD ( answer, docID ( p1 ))
-//          5       p1 ← next ( p1 )
-//          6       p2 ← next ( p2 )
-//          7   else if docID ( p1 ) < docID ( p2 )
-//          8        then p1 ← next ( p1 )
-//          9        else p2 ← next ( p2 )
-//          10 return answer
-     */
 
     HashSet<Integer> intersect(HashSet<Integer> pL1, HashSet<Integer> pL2) {
 
@@ -289,11 +271,6 @@ public class index {
         InvertedIndex index = new InvertedIndex();
         String phrase = "";
         index.buildIndex(new String[]{
-                "docs/500.txt",
-                "docs/501.txt",
-                "docs/502.txt",
-                "docs/503.txt",
-                "docs/504.txt",
                 "docs/100.txt",
                 "docs/101.txt",
                 "docs/102.txt",
@@ -303,9 +280,14 @@ public class index {
                 "docs/106.txt",
                 "docs/107.txt",
                 "docs/108.txt",
-                "docs/109.txt"
+                "docs/109.txt",
+                "docs/500.txt",
+                "docs/501.txt",
+                "docs/502.txt",
+                "docs/503.txt",
+                "docs/504.txt",
+
         });
-        /**/
 
 
         /**/
