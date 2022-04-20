@@ -37,14 +37,6 @@ class InvertedIndex {
     }
 
     public void printDictionary() {
-        Iterator it = index.entrySet().iterator();
-//        while (it.hasNext()) {
-//            Map.Entry pair = (Map.Entry) it.next();
-//            DictEntry dd = (DictEntry) pair.getValue();
-//            System.out.print("** [" + pair.getKey() + "," + dd.doc_freq + "] <" + dd.term_freq + "> =--> ");
-//            //it.remove(); // avoids a ConcurrentModificationException
-//             printPostingList(dd.postingList);
-//        }
         System.out.println("------------------------------------------------------");
         System.out.println("*****    Number of terms = " + index.size());
         System.out.println("------------------------------------------------------");
@@ -111,6 +103,31 @@ class InvertedIndex {
         return answer;
     }
 
+
+    String[] rearrange(String[] words, int[] freq, int len) {
+        boolean sorted = false;
+        int temp;
+        String sTmp;
+        for (int i = 0; i < len - 1; i++) {
+            freq[i] = index.get(words[i].toLowerCase()).doc_freq;
+        }
+        while (!sorted) {
+            sorted = true;
+            for (int i = 0; i < len - 1; i++) {
+                if (freq[i] > freq[i + 1]) {
+                    temp = freq[i];
+                    sTmp = words[i];
+                    freq[i] = freq[i + 1];
+                    words[i] = words[i + 1];
+                    freq[i + 1] = temp;
+                    words[i + 1] = sTmp;
+                    sorted = false;
+                }
+            }
+        }
+        return words;
+    }
+
     public String find(String phrase) {
         String result = "";
         String[] words = phrase.split("\\W+");
@@ -140,7 +157,7 @@ class InvertedIndex {
         //    printPostingList(pL2);
 
         // 3- apply the algorithm
-        HashSet<Integer> answer = intersect(pL1, pL2);
+        HashSet<Integer> answer = query_union(pL1, pL2);
         //printPostingList(answer);
 //        result = "Found in: \n";
 //        for (int num : answer) {
@@ -162,7 +179,7 @@ class InvertedIndex {
         //printPostingList(answer1);
         HashSet<Integer> pL3 = new HashSet<Integer>(index.get(words[2].toLowerCase()).postingList);
         //printPostingList(pL3);
-        HashSet<Integer> answer2 = intersect(pL3, answer1);
+        HashSet<Integer> answer2 = query_union(pL3, answer1);
         // printPostingList(answer2);
 
 //        result = "Found in: \n";
@@ -182,7 +199,7 @@ class InvertedIndex {
         HashSet<Integer> res = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
         int i = 1;
         while (i < len) {
-            res = intersect(res, index.get(words[i].toLowerCase()).postingList);
+            res = query_union(res, index.get(words[i].toLowerCase()).postingList);
             i++;
         }
         for (int num : res) {
@@ -193,76 +210,43 @@ class InvertedIndex {
 
     }
 
-    String[] rearrange(String[] words, int[] freq, int len) {
-        boolean sorted = false;
-        int temp;
-        String sTmp;
-        for (int i = 0; i < len - 1; i++) {
-            freq[i] = index.get(words[i].toLowerCase()).doc_freq;
-        }
-        while (!sorted) {
-            sorted = true;
-            for (int i = 0; i < len - 1; i++) {
-                if (freq[i] > freq[i + 1]) {
-                    temp = freq[i];
-                    sTmp = words[i];
-                    freq[i] = freq[i + 1];
-                    words[i] = words[i + 1];
-                    freq[i + 1] = temp;
-                    words[i + 1] = sTmp;
-                    sorted = false;
-                }
+    public String find_documents(String phrase) { // any mumber of terms optimized search
+        String result = "";
+        ArrayList<String> query = new ArrayList<>(Arrays.asList(phrase.split("\\W+")));
+        ArrayList<String> booleans = new ArrayList<>();
+
+        for(int i=0; i<query.size(); i++)
+        {
+            if(query.get(i).equals("AND") ||
+                    query.get(i).equals("OR") ||
+                    query.get(i).equals("NOT"))
+            {
+                booleans.add(query.get(i));
+                query.remove(query.get(i));
             }
         }
-        return words;
-    }
 
-    public String find_for_any_terms_op(String phrase) { // any mumber of terms optimized search
-        String result = "";
-        String[] words = phrase.split("\\W+");
-        int len = words.length;
-        //int [] freq = new int[len];
-        words = rearrange(words, new int[len], len);
-        HashSet<Integer> res = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
-        int i = 1;
-        while (i < len) {
-            res = intersect(res, index.get(words[i].toLowerCase()).postingList);
-            i++;
-        }
-        for (int num : res) {
-            //System.out.println("\t" + sources.get(num));
-            result += "\t" + sources.get(num) + "\n";
-        }
+        query.forEach(System.out::println);
+        System.out.println("\n");
+        booleans.forEach(System.out::println);
+
+//        int len = words.length;
+//        words = rearrange(words, new int[len], len);
+//        HashSet<Integer> res = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
+//        int i = 1;
+//        while (i < len) {
+//            res = query_union(res, index.get(words[i].toLowerCase()).postingList);
+//            i++;
+//        }
+//        for (int num : res) {
+//            //System.out.println("\t" + sources.get(num));
+//            result += "\t" + sources.get(num) + "\n";
+//        }
         return result;
     }
 
-    public void compare(String phrase) { // optimized search
-        long iterations = 5000000;
-        String result = "";
-        long startTime = System.currentTimeMillis();
-        for (long i = 1; i < iterations; i++) {
-            result = find(phrase);
-        }
-        long estimatedTime = System.currentTimeMillis() - startTime;
-        System.out.println(" (*) elapsed = " + estimatedTime + " ms.");
-        //-----------------------------
-        System.out.println(" result = " + result);
-        startTime = System.currentTimeMillis();
-        for (long i = 1; i < iterations; i++) {
-            result = find_for_any_terms_nonOp(phrase);
-        }
-        estimatedTime = System.currentTimeMillis() - startTime;
-        System.out.println(" (*) Find_03 non-optimized intersect  elapsed = " + estimatedTime + " ms.");
-        System.out.println(" result = " + result);
-//        //-----------------------------
-        startTime = System.currentTimeMillis();
-        for (long i = 1; i < iterations; i++) {
-            result = find_for_any_terms_op(phrase);
-        }
-        estimatedTime = System.currentTimeMillis() - startTime;
-        System.out.println(" (*) Find_04 optimized intersect elapsed = " + estimatedTime + " ms.");
-        System.out.println(" result = " + result);
-    }
+
+
 }
 
 public class index {
@@ -289,20 +273,10 @@ public class index {
 
         });
 
-
-        /**/
-        //   index.find_for_2_terms("agile cost");
-        //    index.compare("and agile");
-        //    System.out.println(" result = " +index.find_for_3_terms("different system agile"));
-        index.compare("agile and can ehab should only");
-//        index.compare("different system should results are in cost and can only computing elements");
-//        do {
-//            System.out.println("Print search phrase: ");
-//            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-//            phrase = in.readLine();
-//            System.out.println(index.find(phrase));
-//        } while (!phrase.isEmpty());
+        index.find_documents("hello AND I OR am and nadah NOT khaled");
     }
+
+
 
 
 

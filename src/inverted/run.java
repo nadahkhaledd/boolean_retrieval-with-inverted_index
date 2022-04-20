@@ -15,13 +15,15 @@ public class run {
 //        union.addAll(all);
 //        union.addAll(not);
 
-        Set<Integer> result = not.stream()
-                .distinct()
-                .filter(all::contains)
-                .collect(Collectors.toSet());
+//        Set<Integer> result = not.stream()
+//                .distinct()
+//                .filter(all::contains)
+//                .collect(Collectors.toSet());
+//
+//        union.addAll(result);
 
-        union.addAll(result);
+        all.retainAll(not);
 
-        union.forEach(System.out::println);
+        all.forEach(System.out::println);
     }
 }
