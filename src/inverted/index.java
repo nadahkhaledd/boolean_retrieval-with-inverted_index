@@ -104,7 +104,12 @@ class InvertedIndex {
     }
 
 
-    String[] rearrange(String[] words, int[] freq, int len) {
+    ArrayList<String> rearrange(ArrayList<String> query, int[] freq, int len) {
+        String[] words = new String[query.size()];
+        for(int e=0; e<query.size(); e++)
+        {
+            words[e] = query.get(e);
+        }
         boolean sorted = false;
         int temp;
         String sTmp;
@@ -125,89 +130,7 @@ class InvertedIndex {
                 }
             }
         }
-        return words;
-    }
-
-    public String find(String phrase) {
-        String result = "";
-        String[] words = phrase.split("\\W+");
-        HashSet<Integer> res = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
-        for (String word : words) {
-            res.retainAll(index.get(word).postingList);
-        }
-        if (res.size() == 0) {
-            System.out.println("Not found");
-            return "";
-        }
-        // String result = "Found in: \n";
-        for (int num : res) {
-            result += "\t" + sources.get(num) + "\n";
-        }
-        return result;
-    }
-
-    public String find_for_2_terms(String phrase) { // 2 term phrase  2 postingsLists
-        String result = "";
-        String[] words = phrase.split("\\W+");
-        // 1- get first posting list
-        HashSet<Integer> pL1 = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
-        //  printPostingList(pL1);
-        // 2- get second posting list
-        HashSet<Integer> pL2 = new HashSet<Integer>(index.get(words[1].toLowerCase()).postingList);
-        //    printPostingList(pL2);
-
-        // 3- apply the algorithm
-        HashSet<Integer> answer = query_union(pL1, pL2);
-        //printPostingList(answer);
-//        result = "Found in: \n";
-//        for (int num : answer) {
-//            //System.out.println("\t" + sources.get(num));
-//            result += "\t" + sources.get(num) + "\n";
-//        }
-        return result;
-    }
-
-    public String find_for_3_terms(String phrase) { // 3 lists
-
-        String result = "";
-        String[] words = phrase.split("\\W+");
-        HashSet<Integer> pL1 = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
-        //printPostingList(pL1);
-        HashSet<Integer> pL2 = new HashSet<Integer>(index.get(words[1].toLowerCase()).postingList);
-        //printPostingList(pL2);
-        HashSet<Integer> answer1 = intersect(pL1, pL2);
-        //printPostingList(answer1);
-        HashSet<Integer> pL3 = new HashSet<Integer>(index.get(words[2].toLowerCase()).postingList);
-        //printPostingList(pL3);
-        HashSet<Integer> answer2 = query_union(pL3, answer1);
-        // printPostingList(answer2);
-
-//        result = "Found in: \n";
-        for (int num : answer2) {
-            //System.out.println("\t" + sources.get(num));
-            result += "\t" + sources.get(num) + "\n";
-        }
-        return result;
-
-    }
-
-    public String find_for_any_terms_nonOp(String phrase) { // any mumber of terms non-optimized search
-        String result = "";
-        String[] words = phrase.split("\\W+");
-        int len = words.length;
-
-        HashSet<Integer> res = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
-        int i = 1;
-        while (i < len) {
-            res = query_union(res, index.get(words[i].toLowerCase()).postingList);
-            i++;
-        }
-        for (int num : res) {
-            //System.out.println("\t" + sources.get(num));
-            result += "\t" + sources.get(num) + "\n";
-        }
-        return result;
-
+        return new ArrayList<String>(Arrays.asList(words));
     }
 
     public String find_documents(String phrase) { // any mumber of terms optimized search
@@ -226,22 +149,27 @@ class InvertedIndex {
             }
         }
 
-        query.forEach(System.out::println);
-        System.out.println("\n");
-        booleans.forEach(System.out::println);
+        query = rearrange(query, new int[query.size()], query.size());
 
-//        int len = words.length;
-//        words = rearrange(words, new int[len], len);
-//        HashSet<Integer> res = new HashSet<Integer>(index.get(words[0].toLowerCase()).postingList);
-//        int i = 1;
-//        while (i < len) {
-//            res = query_union(res, index.get(words[i].toLowerCase()).postingList);
-//            i++;
-//        }
-//        for (int num : res) {
-//            //System.out.println("\t" + sources.get(num));
-//            result += "\t" + sources.get(num) + "\n";
-//        }
+        HashSet<Integer> answer = new HashSet<Integer>(index.get(query.get(0).toLowerCase()).postingList);
+
+        for (int i=1; i<query.size(); i++)
+        {
+            while (booleans.size()!=0)
+            {
+                String nextOperation = booleans.get(0);
+                if (nextOperation.equals("AND")) {
+                    answer = intersect(answer, index.get(query.get(i).toLowerCase()).postingList);
+                } else if (nextOperation.equals("OR")) {
+                    answer = query_union(answer, index.get(query.get(i).toLowerCase()).postingList);
+                }
+                booleans.remove(0);
+            }
+        }
+
+        for (int num : answer) {
+            result += "\t" + sources.get(num) + "\n";
+        }
         return result;
     }
 
@@ -253,7 +181,6 @@ public class index {
 
     public static void main(String[] args) throws IOException {
         InvertedIndex index = new InvertedIndex();
-        String phrase = "";
         index.buildIndex(new String[]{
                 "docs/100.txt",
                 "docs/101.txt",
@@ -273,11 +200,11 @@ public class index {
 
         });
 
-        index.find_documents("hello AND I OR am and nadah NOT khaled");
+        String phrase1 = "agile AND and AND can AND ehab AND should AND only";
+        String phrase2 = "agile OR introduction";
+
+        String result = index.find_documents(phrase2);
+        System.out.println(result);
     }
-
-
-
-
 
 }

@@ -10,6 +10,7 @@ public class run {
     {
         HashSet<Integer> union = new HashSet<Integer>();
         ArrayList<Integer> all = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+        ArrayList<Integer> newall = new ArrayList<Integer>(Arrays.asList(7, 8, 9));
         HashSet<Integer> not = new HashSet<Integer>(Arrays.asList(2, 5, 6, 8, 10, 15));
 
 //        union.addAll(all);
@@ -22,7 +23,9 @@ public class run {
 //
 //        union.addAll(result);
 
-        all.retainAll(not);
+        //all = newall;
+
+        //all.retainAll(not);
 
         all.forEach(System.out::println);
     }
