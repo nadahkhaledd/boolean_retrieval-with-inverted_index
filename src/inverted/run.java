@@ -26,12 +26,26 @@ public class run {
 
         });
 
-        String phrase1 = "agile AND and AND can AND ehab AND should AND only";
-        String phrase2 = "NOT agile";
-        String phrase3 = "introduction AND NOT agile";
+        String[] phrases = {
+                "agile AND and AND can AND ehab AND should AND only",
+                "NOT agile",
+                "agile AND NOT introduction",
+                "machine OR condition",
+        };
 
-        String result = index.find_documents(phrase2);
-        System.out.println(result);
+//        String phrase1 = "agile AND and AND can AND ehab AND should AND only";
+//        String phrase2 = "NOT agile";
+//        String phrase3 = "introduction AND NOT agile";
+//        String phrase4 = "machine OR condition";
+//
+//        String result = index.find_documents(phrase4);
+//        System.out.println(result);
+
+        for(String phrase : phrases)
+        {
+            String result = index.find_documents(phrase);
+            System.out.println(result);
+        }
     }
 
 }
