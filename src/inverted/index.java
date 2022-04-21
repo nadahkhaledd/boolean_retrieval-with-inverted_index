@@ -1,5 +1,8 @@
 package inverted;
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,7 +41,7 @@ class InvertedIndex {
     public void buildIndex(String[] files) {
         int i = 0;
         for (String fileName : files) {
-            try ( BufferedReader file = new BufferedReader(new FileReader(fileName))) {
+            try (BufferedReader file = new BufferedReader(new FileReader(fileName))) {
                 sources.put(i, fileName);
                 String ln;
                 while ((ln = file.readLine()) != null) {
@@ -94,8 +97,7 @@ class InvertedIndex {
                 answer.add(docId1);
                 docId1 = itP1.next();
                 docId2 = itP2.next();
-            }
-            else if (docId1 < docId2) {
+            } else if (docId1 < docId2) {
                 if (itP1.hasNext())
                     docId1 = itP1.next();
                 else return answer;
@@ -135,15 +137,13 @@ class InvertedIndex {
             docId2 = itP2.next();
 
         answer.add(docId1);
-        while (itP1.hasNext())
-        {
+        while (itP1.hasNext()) {
             docId1 = itP1.next();
             answer.add(docId1);
         }
 
         answer.add(docId2);
-        while(itP2.hasNext())
-        {
+        while (itP2.hasNext()) {
             docId2 = itP2.next();
             answer.add(docId2);
         }
@@ -164,12 +164,11 @@ class InvertedIndex {
         HashSet<Integer> answer = new HashSet<>(sources.keySet());
         Iterator<Integer> itP = pL.iterator();
         int docID = 0;
-        if(itP.hasNext())
+        if (itP.hasNext())
             docID = itP.next();
 
         answer.remove(docID);
-        while (itP.hasNext())
-        {
+        while (itP.hasNext()) {
             docID = itP.next();
             answer.remove(docID);
         }
@@ -180,8 +179,7 @@ class InvertedIndex {
 
     ArrayList<String> rearrange(ArrayList<String> query, int[] freq, int len) {
         String[] words = new String[query.size()];
-        for(int e=0; e<query.size(); e++)
-        {
+        for (int e = 0; e < query.size(); e++) {
             words[e] = query.get(e);
         }
         boolean sorted = false;
@@ -208,49 +206,41 @@ class InvertedIndex {
     }
 
     public String find_documents(String phrase) {
-        System.out.println("\nquery -> "+  phrase );
+        System.out.println("\nquery -> " + phrase);
         StringBuilder result = new StringBuilder();
         ArrayList<String> query = new ArrayList<>(Arrays.asList(phrase.split("\\W+")));
         ArrayList<String> words = new ArrayList<>();
         ArrayList<String> booleans = new ArrayList<>();
 
         for (String s : query) {
-            if (s.equals("AND") ||
-                    s.equals("OR") ||
-                    s.equals("NOT")) {
+            if (s.equals("AND") || s.equals("OR") || s.equals("NOT")) {
                 booleans.add(s);
             } else
                 words.add(s);
         }
 
-        for(String element : booleans)
-        {
-            int len =0;
-            if(element.equals("AND"))
+        for (String element : booleans) {
+            int len = 0;
+            if (element.equals("AND"))
                 len++;
-            if(len == booleans.size())
+            if (len == booleans.size())
                 words = rearrange(words, new int[words.size()], words.size());
         }
 
         HashSet<Integer> answer = new HashSet<>(index.get(words.get(0).toLowerCase()).postingList);
 
-        if(booleans.size()==1 && booleans.get(0).equals("NOT") && words.size()==1)
-        {
+        if (booleans.size() == 1 && booleans.get(0).equals("NOT") && words.size() == 1) {
             answer = not(answer);
             //answer = not1(answer);
         }
-        for (int i=1; i<words.size(); i++)
-        {
-            while (booleans.size()!=0)
-            {
+        for (int i = 1; i < words.size(); i++) {
+            while (booleans.size() != 0) {
                 String nextOperation = booleans.get(0);
                 switch (nextOperation) {
-                    case "AND":
-                    {
+                    case "AND": {
                         HashSet<Integer> temp = index.get(words.get(i).toLowerCase()).postingList;
 
-                        if(booleans.size()>1 && booleans.get(1).equals("NOT"))
-                        {
+                        if (booleans.size() > 1 && booleans.get(1).equals("NOT")) {
                             temp = not(temp);
                             booleans.remove(1);
                         }
@@ -259,11 +249,9 @@ class InvertedIndex {
                         break;
                     }
 
-                    case "OR":
-                    {
+                    case "OR": {
                         HashSet<Integer> temp = index.get(words.get(i).toLowerCase()).postingList;
-                        if(booleans.size()>1 && booleans.get(1).equals("NOT"))
-                        {
+                        if (booleans.size() > 1 && booleans.get(1).equals("NOT")) {
                             temp = not(temp);
                             booleans.remove(1);
                         }
