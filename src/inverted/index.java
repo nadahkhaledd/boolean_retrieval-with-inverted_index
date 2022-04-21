@@ -216,7 +216,8 @@ class InvertedIndex {
         return new ArrayList<String>(Arrays.asList(words));
     }
 
-    public String find_documents(String phrase) { // any mumber of terms optimized search
+    public String find_documents(String phrase) {
+        System.out.println("\nquery -> "+  phrase );
         String result = "";
         ArrayList<String> query = new ArrayList<>(Arrays.asList(phrase.split("\\W+")));
         ArrayList<String> words = new ArrayList<>();
@@ -234,7 +235,14 @@ class InvertedIndex {
                 words.add(query.get(i));
         }
 
-        //words = rearrange(words, new int[words.size()], words.size());
+        for(String element : booleans)
+        {
+            int len =0;
+            if(element.equals("AND"))
+                len++;
+            if(len == booleans.size())
+                words = rearrange(words, new int[words.size()], words.size());
+        }
 
         HashSet<Integer> answer = new HashSet<Integer>(index.get(words.get(0).toLowerCase()).postingList);
 
