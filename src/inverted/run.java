@@ -31,6 +31,8 @@ public class run {
                 "NOT agile",
                 "agile AND NOT introduction",
                 "machine OR condition",
+                "computers AND intelligence OR quarantine",
+                "doaa OR ehab OR sarah",
         };
 
 //        String phrase1 = "agile AND and AND can AND ehab AND should AND only";
