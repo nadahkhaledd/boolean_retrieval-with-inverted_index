@@ -76,6 +76,15 @@ class InvertedIndex {
     }
 
 
+    HashSet<Integer> intersect(HashSet<Integer> pL1, HashSet<Integer> pL2) {
+
+        HashSet<Integer> answer = pL1.stream()
+                .distinct()
+                .filter(pL2::contains).collect(Collectors.toCollection(HashSet::new));
+
+        return answer;
+    }
+
     HashSet<Integer> intersect1(HashSet<Integer> pL1, HashSet<Integer> pL2) {
 
         HashSet<Integer> answer = new HashSet<Integer>();
@@ -114,18 +123,16 @@ class InvertedIndex {
         return answer;
     }
 
-    HashSet<Integer> intersect(HashSet<Integer> pL1, HashSet<Integer> pL2) {
 
-        HashSet<Integer> answer = pL1.stream()
-                .distinct()
-                .filter(pL2::contains).collect(Collectors.toCollection(HashSet::new));
+    public HashSet<Integer> query_union(HashSet<Integer> pL1, HashSet<Integer> pL2) {
+        HashSet<Integer> answer = new HashSet<>();
+        answer.addAll(pL1);
+        answer.addAll(pL2);
 
         return answer;
     }
 
-
-    public HashSet<Integer> union1(HashSet<Integer> pL1, HashSet<Integer> pL2)
-    {
+    public HashSet<Integer> union1(HashSet<Integer> pL1, HashSet<Integer> pL2) {
         HashSet<Integer> answer = new HashSet<Integer>();
         Iterator<Integer> itP1 = pL1.iterator();
         Iterator<Integer> itP2 = pL2.iterator();
@@ -153,20 +160,28 @@ class InvertedIndex {
         return answer;
     }
 
-    public HashSet<Integer> query_union(HashSet<Integer> pL1, HashSet<Integer> pL2)
-    {
-        HashSet<Integer> answer = new HashSet<>();
-        answer.addAll(pL1);
-        answer.addAll(pL2);
+
+    HashSet<Integer> not(HashSet<Integer> pL) {
+        HashSet<Integer> answer = new HashSet<Integer>(sources.keySet());
+
+        answer.removeAll(pL);
 
         return answer;
     }
 
-    HashSet<Integer> not(HashSet<Integer> pL)
-    {
+    HashSet<Integer> not1(HashSet<Integer> pL) {
         HashSet<Integer> answer = new HashSet<Integer>(sources.keySet());
+        Iterator<Integer> itP = pL.iterator();
+        int docID = 0;
+        if(itP.hasNext())
+            docID = itP.next();
 
-        answer.removeAll(pL);
+        answer.remove(docID);
+        while (itP.hasNext())
+        {
+            docID = itP.next();
+            answer.remove(docID);
+        }
 
         return answer;
     }
@@ -225,7 +240,8 @@ class InvertedIndex {
 
         if(booleans.size()==1 && booleans.get(0).equals("NOT") && words.size()==1)
         {
-            answer = not(answer);
+            //answer = not(answer);
+            answer = not1(answer);
         }
         for (int i=1; i<words.size(); i++)
         {
@@ -242,8 +258,8 @@ class InvertedIndex {
                             temp = not(temp);
                             booleans.remove(1);
                         }
-                        //answer = intersect(answer, temp);
-                        answer = intersect1(answer, temp);
+                        answer = intersect(answer, temp);
+                        //answer = intersect1(answer, temp);
                         break;
                     }
 
@@ -255,8 +271,8 @@ class InvertedIndex {
                             temp = not(temp);
                             booleans.remove(1);
                         }
-                        //answer = query_union(answer, temp);
-                        answer = union1(answer, temp);
+                        answer = query_union(answer, temp);
+                        //answer = union1(answer, temp);
                         break;
                     }
                 }
@@ -296,7 +312,7 @@ public class index {
         });
 
         String phrase1 = "agile AND and AND can AND ehab AND should AND only";
-        String phrase2 = "agile AND introduction";
+        String phrase2 = "NOT agile";
         String phrase3 = "introduction AND NOT agile";
 
         String result = index.find_documents(phrase2);
