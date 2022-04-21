@@ -35,14 +35,6 @@ public class run {
                 "doaa OR ehab OR sarah",
         };
 
-//        String phrase1 = "agile AND and AND can AND ehab AND should AND only";
-//        String phrase2 = "NOT agile";
-//        String phrase3 = "introduction AND NOT agile";
-//        String phrase4 = "machine OR condition";
-//
-//        String result = index.find_documents(phrase4);
-//        System.out.println(result);
-
         for(String phrase : phrases)
         {
             String result = index.find_documents(phrase);
