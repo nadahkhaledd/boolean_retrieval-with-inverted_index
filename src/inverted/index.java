@@ -154,6 +154,7 @@ class InvertedIndex {
         //words = rearrange(words, new int[words.size()], words.size());
 
         HashSet<Integer> answer = new HashSet<Integer>(index.get(words.get(0).toLowerCase()).postingList);
+
         if(booleans.size()==1 && booleans.get(0).equals("NOT") && words.size()==1)
         {
             answer = not(answer);
@@ -228,11 +229,7 @@ public class index {
         String phrase2 = "NOT agile";
         String phrase3 = "introduction AND NOT agile";
 
-//        var r = index.not(new HashSet<>(Arrays.asList(0, 1)));
-//        r = index.intersect(new HashSet<>(Arrays.asList(1, 7, 8, 9, 10, 11, 12, 13, 14)), r);
-//        r.forEach(element -> System.out.println(index.sources.get(element)));
-
-        String result = index.find_documents(phrase2);
+        String result = index.find_documents(phrase3);
         System.out.println(result);
     }
 
