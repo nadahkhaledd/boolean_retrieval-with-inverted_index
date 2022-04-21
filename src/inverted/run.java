@@ -6,27 +6,33 @@ import java.util.stream.Collectors;
 
 public class run {
 
-    public static void main(String[] args) throws IOException
-    {
-        HashSet<Integer> union = new HashSet<Integer>();
-        ArrayList<Integer> all = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
-        ArrayList<Integer> newall = new ArrayList<Integer>(Arrays.asList(7, 8, 9));
-        HashSet<Integer> not = new HashSet<Integer>(Arrays.asList(2, 5, 6, 8, 10, 15));
+    public static void main(String[] args) throws IOException {
+        InvertedIndex index = new InvertedIndex();
+        index.buildIndex(new String[]{
+                "docs/100.txt",
+                "docs/101.txt",
+                "docs/102.txt",
+                "docs/103.txt",
+                "docs/104.txt",
+                "docs/105.txt",
+                "docs/106.txt",
+                "docs/107.txt",
+                "docs/108.txt",
+                "docs/109.txt",
+                "docs/500.txt",
+                "docs/501.txt",
+                "docs/502.txt",
+                "docs/503.txt",
+                "docs/504.txt",
 
-//        union.addAll(all);
-//        union.addAll(not);
+        });
 
-//        Set<Integer> result = not.stream()
-//                .distinct()
-//                .filter(all::contains)
-//                .collect(Collectors.toSet());
-//
-//        union.addAll(result);
+        String phrase1 = "agile AND and AND can AND ehab AND should AND only";
+        String phrase2 = "NOT agile";
+        String phrase3 = "introduction AND NOT agile";
 
-        //all = newall;
-
-        //all.retainAll(not);
-
-        all.forEach(System.out::println);
+        String result = index.find_documents(phrase2);
+        System.out.println(result);
     }
+
 }
