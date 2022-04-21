@@ -154,10 +154,10 @@ class InvertedIndex {
         //words = rearrange(words, new int[words.size()], words.size());
 
         HashSet<Integer> answer = new HashSet<Integer>(index.get(words.get(0).toLowerCase()).postingList);
-
-
-        //booleans.forEach(System.out::println);
-
+        if(booleans.size()==1 && booleans.get(0).equals("NOT") && words.size()==1)
+        {
+            answer = not(answer);
+        }
         for (int i=1; i<words.size(); i++)
         {
             while (booleans.size()!=0)
@@ -171,6 +171,7 @@ class InvertedIndex {
                         if(booleans.size()>1 && booleans.get(1).equals("NOT"))
                         {
                              temp = not(temp);
+                             booleans.remove(1);
                         }
                         answer = intersect(answer, temp);
                         break;
@@ -181,7 +182,8 @@ class InvertedIndex {
                         HashSet<Integer> temp = index.get(words.get(i).toLowerCase()).postingList;
                         if(booleans.size()>1 && booleans.get(1).equals("NOT"))
                         {
-                            temp = not(index.get(words.get(i).toLowerCase()).postingList);
+                            temp = not(temp);
+                            booleans.remove(1);
                         }
                         answer = query_union(answer, temp);
                         break;
@@ -223,14 +225,14 @@ public class index {
         });
 
         String phrase1 = "agile AND and AND can AND ehab AND should AND only";
-        String phrase2 = "agile";
+        String phrase2 = "NOT agile";
         String phrase3 = "introduction AND NOT agile";
 
 //        var r = index.not(new HashSet<>(Arrays.asList(0, 1)));
 //        r = index.intersect(new HashSet<>(Arrays.asList(1, 7, 8, 9, 10, 11, 12, 13, 14)), r);
 //        r.forEach(element -> System.out.println(index.sources.get(element)));
 
-        String result = index.find_documents(phrase3);
+        String result = index.find_documents(phrase2);
         System.out.println(result);
     }
 
