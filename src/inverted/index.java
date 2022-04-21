@@ -10,7 +10,7 @@ class DictEntry {
     public HashSet<Integer> postingList;
 
     DictEntry() {
-        postingList = new HashSet<Integer>();
+        postingList = new HashSet<>();
     }
 }
 
@@ -20,8 +20,8 @@ class InvertedIndex {
     HashMap<String, DictEntry> index; // THe inverted index
 
     InvertedIndex() {
-        sources = new HashMap<Integer, String>();
-        index = new HashMap<String, DictEntry>();
+        sources = new HashMap<>();
+        index = new HashMap<>();
     }
 
     public void printPostingList(HashSet<Integer> pl) {
@@ -54,7 +54,6 @@ class InvertedIndex {
                             index.get(word).doc_freq += 1; //set doc freq to the number of doc that contain the term
                             index.get(word).postingList.add(i); // add the posting to the posting:ist
                         }
-                        //set the term_fteq in the collection
                         index.get(word).term_freq += 1;
                     }
                 }
@@ -79,7 +78,7 @@ class InvertedIndex {
 
     HashSet<Integer> intersect1(HashSet<Integer> pL1, HashSet<Integer> pL2) {
 
-        HashSet<Integer> answer = new HashSet<Integer>();
+        HashSet<Integer> answer = new HashSet<>();
         Iterator<Integer> itP1 = pL1.iterator();
         Iterator<Integer> itP2 = pL2.iterator();
 
@@ -125,7 +124,7 @@ class InvertedIndex {
     }
 
     public HashSet<Integer> union1(HashSet<Integer> pL1, HashSet<Integer> pL2) {
-        HashSet<Integer> answer = new HashSet<Integer>();
+        HashSet<Integer> answer = new HashSet<>();
         Iterator<Integer> itP1 = pL1.iterator();
         Iterator<Integer> itP2 = pL2.iterator();
 
@@ -154,7 +153,7 @@ class InvertedIndex {
 
 
     HashSet<Integer> not(HashSet<Integer> pL) {
-        HashSet<Integer> answer = new HashSet<Integer>(sources.keySet());
+        HashSet<Integer> answer = new HashSet<>(sources.keySet());
 
         answer.removeAll(pL);
 
@@ -162,7 +161,7 @@ class InvertedIndex {
     }
 
     HashSet<Integer> not1(HashSet<Integer> pL) {
-        HashSet<Integer> answer = new HashSet<Integer>(sources.keySet());
+        HashSet<Integer> answer = new HashSet<>(sources.keySet());
         Iterator<Integer> itP = pL.iterator();
         int docID = 0;
         if(itP.hasNext())
@@ -205,26 +204,23 @@ class InvertedIndex {
                 }
             }
         }
-        return new ArrayList<String>(Arrays.asList(words));
+        return new ArrayList<>(Arrays.asList(words));
     }
 
     public String find_documents(String phrase) {
         System.out.println("\nquery -> "+  phrase );
-        String result = "";
+        StringBuilder result = new StringBuilder();
         ArrayList<String> query = new ArrayList<>(Arrays.asList(phrase.split("\\W+")));
         ArrayList<String> words = new ArrayList<>();
         ArrayList<String> booleans = new ArrayList<>();
 
-        for(int i=0; i<query.size(); i++)
-        {
-            if(query.get(i).equals("AND") ||
-                    query.get(i).equals("OR") ||
-                    query.get(i).equals("NOT"))
-            {
-                booleans.add(query.get(i));
-            }
-            else
-                words.add(query.get(i));
+        for (String s : query) {
+            if (s.equals("AND") ||
+                    s.equals("OR") ||
+                    s.equals("NOT")) {
+                booleans.add(s);
+            } else
+                words.add(s);
         }
 
         for(String element : booleans)
@@ -236,7 +232,7 @@ class InvertedIndex {
                 words = rearrange(words, new int[words.size()], words.size());
         }
 
-        HashSet<Integer> answer = new HashSet<Integer>(index.get(words.get(0).toLowerCase()).postingList);
+        HashSet<Integer> answer = new HashSet<>(index.get(words.get(0).toLowerCase()).postingList);
 
         if(booleans.size()==1 && booleans.get(0).equals("NOT") && words.size()==1)
         {
@@ -281,9 +277,9 @@ class InvertedIndex {
         }
 
         for (int num : answer) {
-            result += "\t" + sources.get(num) + "\n";
+            result.append("\t").append(sources.get(num)).append("\n");
         }
-        return result;
+        return result.toString();
     }
 
 }
