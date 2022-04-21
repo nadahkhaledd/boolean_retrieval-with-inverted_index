@@ -1,12 +1,4 @@
 package inverted;
-/*
- * InvertedIndex - Given a set of text files, implement a program to create an
- * inverted index. Also create a user interface to do a search using that inverted
- * index which returns a list of files that contain the query term / terms.
- * The search index can be in memory.
- *
-
- */
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
