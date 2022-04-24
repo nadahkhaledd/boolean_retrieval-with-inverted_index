@@ -33,7 +33,7 @@ public class run {
                 "machine OR condition",
                 "computers AND intelligence OR quarantine",
                 "doaa OR ehab OR sarah",
-                "increased OR prediction OR more",
+                "increased OR prediction OR NOT more AND published",
         };
 
         for(String phrase : phrases)
